@@ -501,7 +501,7 @@ async function callWebhook(question, icon, title) {
     // Fallback về nội dung tĩnh
     document.getElementById('popup-body').innerHTML =
       STATIC_CONTENT[currentTopic].html +
-      `<div class="error-msg">⚠️ Chưa kết nối được webhook. Hiển thị nội dung tĩnh.<br><small>${err.message}</small></div>`;
+      `<div class="error-msg">⚠️ Chưa kết nối online được với Chuyên gia. Xin liên hệ đt/zalo: 079.919.7177 hoặc 019.321.4549 .<br><small>${err.message}</small></div>`;
   }
 }
 
