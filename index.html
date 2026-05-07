@@ -399,7 +399,7 @@
       <div class="popup-title" id="popup-title"></div>
     </div>
     <div class="popup-body" id="popup-body">
-      <div class="loading"><div class="spinner"></div> Đang hỏi Chuyên gia AI...</div>
+      <div class="loading"><div class="spinner"></div> Đang kết nối với Chuyên gia AI ...</div>
     </div>
     <div class="ask-more">
       <input class="ask-input" id="ask-input" type="text"
@@ -501,7 +501,7 @@ async function callWebhook(question, icon, title) {
     // Fallback về nội dung tĩnh
     document.getElementById('popup-body').innerHTML =
       STATIC_CONTENT[currentTopic].html +
-      `<div class="error-msg">⚠️ Chưa kết nối online được với Chuyên gia. Xin liên hệ đt/zalo: 079.919.7177 hoặc 019.321.4549 .<br><small>${err.message}</small></div>`;
+      `<div class="error-msg">⚠️ Chưa kết nối online được với Chuyên gia. Xin liên hệ Đt/Zalo: 079.919.7177 hoặc 019.321.4549 .<br><small>${err.message}</small></div>`;
   }
 }
 
