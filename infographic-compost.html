@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rác Thải Bếp – Phân Bón Hữu Cơ</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:  #27500A;
+    --green-mid:   #3B6D11;
+    --green:       #639922;
+    --green-light: #C0DD97;
+    --green-pale:  #EAF3DE;
+    --amber:       #BA7517;
+    --amber-pale:  #FAEEDA;
+    --teal-dark:   #085041;
+    --teal:        #1D9E75;
+    --teal-pale:   #E1F5EE;
+    --blue-dark:   #0C447C;
+    --blue:        #378ADD;
+    --blue-pale:   #E6F1FB;
+    --text:        #1a1a1a;
+    --text-muted:  #555;
+    --bg:          #f7f9f3;
+    --radius:      14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 48px;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(18px, 3vw, 26px);
+    text-align: center;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+    line-height: 1.35;
+  }
+  h1 span { color: var(--green); }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  /* ── Vùng infographic ── */
+  .infographic {
+    position: relative;
+    width: min(560px, 100%);
+    aspect-ratio: 1;
+  }
+
+  /* Vòng tròn trung tâm */
+  .center-circle {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: var(--green-pale);
+    border: 2.5px solid var(--green);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    z-index: 2;
+  }
+  .center-circle svg { width: 44px; height: 44px; }
+  .center-circle span {
+    font-family: 'Lora', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  /* SVG đường kết nối */
+  .connector-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Các nút chức năng */
+  .node {
+    position: absolute;
+    border-radius: var(--radius);
+    padding: 14px 16px 12px;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    z-index: 3;
+    width: 185px;
+    text-align: center;
+    border: 1.5px solid transparent;
+  }
+  .node:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  }
+  .node-title {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 8px 0 4px;
+  }
+  .node-desc {
+    font-size: 11px;
+    line-height: 1.5;
+    opacity: .85;
+  }
+  .node-icon { font-size: 28px; line-height: 1; }
+  .node-hint {
+    font-size: 10px;
+    margin-top: 6px;
+    opacity: .6;
+    font-style: italic;
+  }
+
+  /* Màu từng nút */
+  .node-top    { background: var(--green-pale); border-color: var(--green);
+                 color: var(--green-dark); top: 2%; left: 50%; transform: translateX(-50%); }
+  .node-right  { background: var(--amber-pale); border-color: var(--amber);
+                 color: #412402; top: 50%; right: 0; transform: translateY(-50%); }
+  .node-bottom { background: var(--teal-pale);  border-color: var(--teal);
+                 color: var(--teal-dark); bottom: 2%; left: 50%; transform: translateX(-50%); }
+  .node-left   { background: var(--blue-pale);  border-color: var(--blue);
+                 color: var(--blue-dark); top: 50%; left: 0; transform: translateY(-50%); }
+
+  .node-top:hover    { transform: translateX(-50%) translateY(-3px) scale(1.03); }
+  .node-right:hover  { transform: translateY(-50%) translateX(3px) scale(1.03); }
+  .node-bottom:hover { transform: translateX(-50%) translateY(3px) scale(1.03); }
+  .node-left:hover   { transform: translateY(-50%) translateX(-3px) scale(1.03); }
+
+  /* ── Bảng so sánh ── */
+  .compare-table {
+    width: min(560px, 100%);
+    margin-top: 28px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1.5px solid var(--green-light);
+    font-size: 13px;
+  }
+  .compare-table thead { background: var(--green-dark); color: #fff; }
+  .compare-table th, .compare-table td {
+    padding: 9px 14px; text-align: left;
+  }
+  .compare-table tbody tr:nth-child(odd)  { background: var(--green-pale); }
+  .compare-table tbody tr:nth-child(even) { background: #fff; }
+  .compare-table td:first-child { font-weight: 700; }
+  .highlight-row td { color: var(--green-dark); font-weight: 700; }
+  .badge {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    font-size: 10px;
+    border-radius: 20px;
+    padding: 1px 8px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── Popup overlay ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .overlay.active { display: flex; }
+
+  .popup {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    position: relative;
+    animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn {
+    from { transform: scale(.88); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .popup-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none;
+    font-size: 22px; cursor: pointer;
+    color: var(--text-muted); line-height: 1;
+  }
+  .popup-close:hover { color: var(--text); }
+
+  .popup-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid #f0f0f0;
+  }
+  .popup-icon { font-size: 32px; }
+  .popup-title {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--green-dark);
+  }
+
+  .popup-body { font-size: 14px; line-height: 1.75; color: #333; }
+  .popup-body p { margin-bottom: 10px; }
+  .popup-body strong { color: var(--green-dark); }
+
+  /* Loading spinner */
+  .loading {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text-muted); font-size: 14px;
+    padding: 20px 0;
+  }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2.5px solid #ddd;
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Khu vực hỏi thêm */
+  .ask-more {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1.5px solid #f0f0f0;
+    display: flex; gap: 8px;
+  }
+  .ask-input {
+    flex: 1;
+    padding: 9px 13px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    outline: none;
+  }
+  .ask-input:focus { border-color: var(--green); }
+  .ask-btn {
+    padding: 9px 16px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .ask-btn:hover { background: var(--green-mid); }
+
+  /* Thông báo lỗi / fallback */
+  .error-msg {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    color: #856404;
+    margin-top: 8px;
+  }
+
+  footer {
+    margin-top: 32px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Giá trị dinh dưỡng của <span>rác thải bếp</span><br>làm phân bón hữu cơ</h1>
+<p class="subtitle">Click vào từng nút để xem giải thích chi tiết từ AI</p>
+
+<!-- ── INFOGRAPHIC ── -->
+<div class="infographic">
+
+  <!-- SVG đường kết nối -->
+  <svg class="connector-svg" viewBox="0 0 560 560" fill="none">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5"
+              markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" stroke="#639922" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </marker>
+    </defs>
+    <!-- top → right -->
+    <path d="M 345 175 Q 400 200 385 265"
+          stroke="#639922" stroke-width="2" stroke-dasharray="6 4"
+          marker-end="url(#arr)"/>
+    <!-- right → bottom -->
+    <path d="M 385 295 Q 400 360 345 385"
+          stroke="#639922" stroke-width="2" stroke-dasharray="6 4"
+          marker-end="url(#arr)"/>
+    <!-- bottom → left -->
+    <path d="M 215 385 Q 160 360 175 295"
+          stroke="#639922" stroke-width="2" stroke-dasharray="6 4"
+          marker-end="url(#arr)"/>
+    <!-- left → top -->
+    <path d="M 175 265 Q 160 200 215 175"
+          stroke="#639922" stroke-width="2" stroke-dasharray="6 4"
+          marker-end="url(#arr)"/>
+  </svg>
+
+  <!-- Vòng tròn trung tâm -->
+  <div class="center-circle">
+    <svg viewBox="0 0 44 44" fill="none">
+      <ellipse cx="18" cy="26" rx="10" ry="14" fill="#639922" transform="rotate(-20,18,26)" opacity=".85"/>
+      <ellipse cx="26" cy="22" rx="8" ry="11" fill="#97C459" transform="rotate(15,26,22)" opacity=".8"/>
+      <line x1="22" y1="36" x2="22" y2="10" stroke="#27500A" stroke-width="1.5"/>
+    </svg>
+    <span>Phân bón<br>hữu cơ</span>
+  </div>
+
+  <!-- NÚT 1: Độ giàu dinh dưỡng (trên) -->
+  <div class="node node-top" onclick="openPopup('nutrition')">
+    <div class="node-icon">🌿</div>
+    <div class="node-title">Độ giàu dinh dưỡng</div>
+    <div class="node-desc">N, P, K cao + vi lượng Ca, Mg, Zn</div>
+    <div class="node-hint">👆 Click để tìm hiểu</div>
+  </div>
+
+  <!-- NÚT 2: Phân hủy nhanh (phải) -->
+  <div class="node node-right" onclick="openPopup('decompose')">
+    <div class="node-icon">⚡</div>
+    <div class="node-title">Phân hủy nhanh</div>
+    <div class="node-desc">Ủ phân trong 4–8 tuần</div>
+    <div class="node-hint">👆 Click để tìm hiểu</div>
+  </div>
+
+  <!-- NÚT 3: Ưu điểm bền vững (dưới) -->
+  <div class="node node-bottom" onclick="openPopup('sustainable')">
+    <div class="node-icon">♻️</div>
+    <div class="node-title">Ưu điểm bền vững</div>
+    <div class="node-desc">Giảm rác thải, thay thế phân hóa học</div>
+    <div class="node-hint">👆 Click để tìm hiểu</div>
+  </div>
+
+  <!-- NÚT 4: Lợi ích vi sinh (trái) -->
+  <div class="node node-left" onclick="openPopup('microbe')">
+    <div class="node-icon">🦠</div>
+    <div class="node-title">Lợi ích vi sinh</div>
+    <div class="node-desc">Tăng sinh học đất, hấp thu dinh dưỡng</div>
+    <div class="node-hint">👆 Click để tìm hiểu</div>
+  </div>
+
+</div>
+
+<!-- ── BẢNG SO SÁNH ── -->
+<table class="compare-table">
+  <thead>
+    <tr><th>Loại phân</th><th>NPK</th><th>Tỷ lệ C:N</th><th>Tốc độ ủ</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Phân chuồng</td><td>Thấp</td><td>20–30</td><td>2–4 tháng</td></tr>
+    <tr><td>Tàn dư cây trồng</td><td>Trung bình</td><td>30–80</td><td>3–6 tháng</td></tr>
+    <tr class="highlight-row">
+      <td>Rác thải bếp <span class="badge">★ Tốt nhất</span></td>
+      <td>Cao</td><td>15–20</td><td>4–8 tuần</td>
+    </tr>
+  </tbody>
+</table>
+
+<footer>Trang Trại Sống Giá · Phân bón hữu cơ từ rác thải bếp</footer>
+
+<!-- ── POPUP ── -->
+<div class="overlay" id="overlay" onclick="closeOnOverlay(event)">
+  <div class="popup" id="popup">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-header">
+      <div class="popup-icon" id="popup-icon"></div>
+      <div class="popup-title" id="popup-title"></div>
+    </div>
+    <div class="popup-body" id="popup-body">
+      <div class="loading"><div class="spinner"></div> Đang hỏi AI...</div>
+    </div>
+    <div class="ask-more">
+      <input class="ask-input" id="ask-input" type="text"
+             placeholder="Hỏi thêm về chủ đề này..." maxlength="200"
+             onkeydown="if(event.key==='Enter') askMore()">
+      <button class="ask-btn" onclick="askMore()">Hỏi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// CẤU HÌNH — chỉnh 2 dòng này
+// ════════════════════════════════════════════
+const WEBHOOK_URL = 'https://n8n.cpart.vn/webhook/infographic-qa';
+const USE_WEBHOOK = true;   // false = dùng nội dung tĩnh (fallback)
+
+// ── Nội dung tĩnh (fallback khi webhook chưa sẵn sàng) ──
+const STATIC_CONTENT = {
+  nutrition: {
+    icon: '🌿', title: 'Độ giàu dinh dưỡng',
+    html: `<p><strong>Rác thải bếp chứa hàm lượng N-P-K cao nhất</strong> trong các loại nguyên liệu ủ phân phổ biến.</p>
+           <p>• <strong>N (Đạm):</strong> Từ protein thực phẩm, kích thích tăng trưởng lá và thân.</p>
+           <p>• <strong>P (Lân):</strong> Hỗ trợ phát triển rễ, ra hoa và đậu quả.</p>
+           <p>• <strong>K (Kali):</strong> Tăng sức đề kháng, cải thiện chất lượng nông sản.</p>
+           <p>• <strong>Vi lượng Ca, Mg, Zn:</strong> Không có trong phân hóa học thông thường, rất cần cho đất lâu dài.</p>`
+  },
+  decompose: {
+    icon: '⚡', title: 'Tại sao phân hủy nhanh?',
+    html: `<p><strong>Rác thải bếp phân hủy nhanh hơn 3–5 lần</strong> so với phân chuồng nhờ:</p>
+           <p>• <strong>Tỷ lệ C:N thấp (15–20:1):</strong> Gần mức lý tưởng cho vi sinh vật, không cần điều chỉnh nhiều.</p>
+           <p>• <strong>Hàm lượng nước 70–90%:</strong> Tạo môi trường ẩm để vi khuẩn hoạt động ngay.</p>
+           <p>• <strong>Không có lignin cứng:</strong> Tế bào mềm, enzyme phân giải dễ dàng.</p>
+           <p>• <strong>Vi sinh vật sẵn có:</strong> Bề mặt thực phẩm mang theo hệ vi khuẩn đa dạng.</p>
+           <p>Kết hợp thêm <strong>chế phẩm vi sinh</strong> có thể rút ngắn còn 2–3 tuần.</p>`
+  },
+  sustainable: {
+    icon: '♻️', title: 'Ưu điểm bền vững',
+    html: `<p>Sử dụng rác thải bếp làm phân mang lại <strong>3 lợi ích bền vững lớn:</strong></p>
+           <p>• <strong>Giảm thiểu rác thải:</strong> Rác hữu cơ chiếm 50–65% rác thải đô thị Việt Nam. Tái sử dụng tại nguồn giảm tải bãi chôn lấp.</p>
+           <p>• <strong>Thay thế phân bón hóa học:</strong> Giảm chi phí sản xuất, giảm ô nhiễm đất và nước ngầm do lạm dụng phân vô cơ.</p>
+           <p>• <strong>Giảm phát thải khí nhà kính:</strong> Chôn lấp rác hữu cơ sinh ra CH₄ (methane). Ủ phân hảo khí chuyển hóa thành CO₂ ít độc hại hơn 25 lần.</p>`
+  },
+  microbe: {
+    icon: '🦠', title: 'Lợi ích vi sinh vật',
+    html: `<p>Phân compost từ rác bếp <strong>cải thiện hệ vi sinh đất toàn diện:</strong></p>
+           <p>• <strong>Tăng mật độ vi khuẩn có lợi:</strong> Bacillus, Trichoderma giúp phân giải chất hữu cơ và ức chế mầm bệnh.</p>
+           <p>• <strong>Cải thiện cấu trúc đất:</strong> Humus từ phân compost tạo liên kết đất tơi xốp, thoáng khí hơn.</p>
+           <p>• <strong>Tăng khả năng giữ nước:</strong> Đất giàu mùn giữ nước gấp 2–3 lần đất bạc màu.</p>
+           <p>• <strong>Kích hoạt chu trình dinh dưỡng tự nhiên:</strong> Vi sinh vật chuyển hóa N hữu cơ thành dạng cây hấp thu được.</p>`
+  }
+};
+
+let currentTopic = null;
+let conversationHistory = [];
+
+// ── Mở popup ──
+async function openPopup(topic) {
+  currentTopic = topic;
+  conversationHistory = [];
+  const s = STATIC_CONTENT[topic];
+
+  document.getElementById('popup-icon').textContent  = s.icon;
+  document.getElementById('popup-title').textContent = s.title;
+  document.getElementById('popup-body').innerHTML =
+    '<div class="loading"><div class="spinner"></div> Đang hỏi AI...</div>';
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('ask-input').value = '';
+
+  const question = `Giải thích về "${s.title}" trong ngữ cảnh rác thải bếp làm phân hữu cơ. Trả lời ngắn gọn, rõ ràng bằng tiếng Việt, dùng gạch đầu dòng.`;
+
+  if (USE_WEBHOOK) {
+    await callWebhook(question, s.icon, s.title);
+  } else {
+    showStatic(topic);
+  }
+}
+
+// ── Gọi webhook n8n ──
+async function callWebhook(question, icon, title) {
+  conversationHistory.push({ role: 'user', content: question });
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question,
+        topic: currentTopic,
+        history: conversationHistory
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const answer = data.answer || data.text || data.output || JSON.stringify(data);
+    conversationHistory.push({ role: 'assistant', content: answer });
+    renderAnswer(answer);
+  } catch (err) {
+    console.error(err);
+    // Fallback về nội dung tĩnh
+    document.getElementById('popup-body').innerHTML =
+      STATIC_CONTENT[currentTopic].html +
+      `<div class="error-msg">⚠️ Chưa kết nối được webhook. Hiển thị nội dung tĩnh.<br><small>${err.message}</small></div>`;
+  }
+}
+
+// ── Hỏi thêm ──
+async function askMore() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+
+  const s = STATIC_CONTENT[currentTopic];
+  document.getElementById('popup-body').innerHTML +=
+    `<div class="loading" style="margin-top:12px"><div class="spinner"></div> Đang hỏi thêm...</div>`;
+
+  if (USE_WEBHOOK) {
+    conversationHistory.push({ role: 'user', content: q });
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, topic: currentTopic, history: conversationHistory })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const answer = data.answer || data.text || data.output || '';
+      conversationHistory.push({ role: 'assistant', content: answer });
+      // Xóa spinner cuối, thêm câu trả lời mới
+      const body = document.getElementById('popup-body');
+      body.querySelector('.loading:last-child')?.remove();
+      body.innerHTML += `<hr style="margin:12px 0;border:none;border-top:1px solid #eee">
+        <p><strong>Q: ${q}</strong></p>${markdownToHtml(answer)}`;
+    } catch(err) {
+      const body = document.getElementById('popup-body');
+      body.querySelector('.loading:last-child')?.remove();
+      body.innerHTML += `<div class="error-msg">⚠️ Lỗi kết nối: ${err.message}</div>`;
+    }
+  } else {
+    const body = document.getElementById('popup-body');
+    body.querySelector('.loading:last-child')?.remove();
+    body.innerHTML += `<div class="error-msg">Webhook chưa bật. Bật USE_WEBHOOK = true và cấu hình WEBHOOK_URL.</div>`;
+  }
+}
+
+// ── Hiển thị nội dung tĩnh ──
+function showStatic(topic) {
+  document.getElementById('popup-body').innerHTML = STATIC_CONTENT[topic].html;
+}
+
+// ── Render markdown đơn giản → HTML ──
+function renderAnswer(text) {
+  document.getElementById('popup-body').innerHTML = markdownToHtml(text);
+}
+
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^[-•]\s+(.+)/gm, '<p>• $1</p>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<p)(.+)/gm, '<p>$1</p>')
+    .replace(/<p><\/p>/g, '');
+}
+
+function closePopup() {
+  document.getElementById('overlay').classList.remove('active');
+}
+function closeOnOverlay(e) {
+  if (e.target === document.getElementById('overlay')) closePopup();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+</script>
+</body>
+</html>
